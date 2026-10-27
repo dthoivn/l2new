@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiểm tra giữa học kỳ I - Tin học lớp 2</title>
+<style>
+:root{--blue:#2563eb;--ink:#172033;--muted:#5b6475;--line:#dbe3ef;--bg:#f3f7fc;--good:#15803d;--bad:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:22px 16px 40px}
+header{background:linear-gradient(135deg,#1d4ed8,#60a5fa);color:white;padding:24px;border-radius:18px;box-shadow:0 8px 24px #1d4ed822}
+header h1{margin:0 0 8px;font-size:clamp(1.4rem,3vw,2rem);line-height:1.25}header p{margin:4px 0}.pill{display:inline-block;background:#ffffff26;border:1px solid #ffffff55;border-radius:999px;padding:4px 10px;margin-top:10px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px;box-shadow:0 3px 12px #0f172a08}
+h2{font-size:1.15rem;margin:0 0 14px}.student-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+label.field{display:block;font-weight:650}input[type=text]{display:block;width:100%;margin-top:6px;border:1px solid #b9c6d8;border-radius:10px;padding:11px 12px;font:inherit}
+.question{border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}.q-title{margin:0 0 12px;font-weight:750}.q-number{color:var(--blue)}
+.options{display:grid;gap:8px}.option{display:flex;gap:10px;align-items:flex-start;border:1px solid #d9e2ef;border-radius:11px;padding:10px 12px;cursor:pointer}
+.option:hover{background:#f5f8ff;border-color:#9ab8f5}.option:has(input:checked){background:#eff6ff;border-color:var(--blue)}.option input{margin-top:5px;accent-color:var(--blue)}
+.hint{color:var(--muted);font-size:.92rem;margin:10px 0 0}.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+button{border:0;border-radius:11px;padding:12px 17px;font:inherit;font-weight:750;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#e8eef8;color:#1e293b}
+.result{padding:14px;border-radius:12px;margin-top:16px}.good{background:#f0fdf4;border:1px solid #bbf7d0}.bad{background:#fef2f2;border:1px solid #fecaca}
+.review{border-top:1px solid var(--line);padding:12px 0}.correct{color:var(--good);font-weight:700}.incorrect{color:var(--bad);font-weight:700}
+footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:22px}
+@media(max-width:620px){.student-grid{grid-template-columns:1fr}.panel{padding:15px}header{padding:20px}}
+@media print{body{background:white}.actions,#identityPanel,footer{display:none!important}header{background:white;color:black;box-shadow:none;padding:0}.panel,.question{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>BÀI KIỂM TRA GIỮA HỌC KỲ I – TIN HỌC 2</h1>
+<p>Năm học 2026–2027</p>
+<p>Bộ sách: Kết nối tri thức với cuộc sống</p>
+<span class="pill">10 câu trắc nghiệm · Mỗi câu có 2 đáp án · 10 điểm</span>
+</header>
+<section class="panel" id="identityPanel">
+<h2>Thông tin học sinh</h2>
+<div class="student-grid">
+<label class="field">Họ và tên<input id="studentName" type="text" placeholder="Ví dụ: Nguyễn Minh An" maxlength="100"></label>
+<label class="field">Lớp<input id="studentClass" type="text" placeholder="Ví dụ: 2A" maxlength="30"></label>
+</div>
+<p class="hint">Em đọc kỹ từng câu và chỉ chọn một đáp án A hoặc B.</p>
+</section>
+<section class="panel">
+<h2>Phần trắc nghiệm</h2>
+<p class="hint">Chọn đáp án đúng nhất cho mỗi câu.</p>
+<div id="questions"></div>
+<div class="actions"><button class="primary" id="submitBtn" type="button">Nộp bài và xem điểm</button><button class="secondary" id="resetBtn" type="button">Làm lại</button><button class="secondary" type="button" onclick="window.print()">In đề</button></div>
+<div id="result" hidden aria-live="polite"></div>
+</section>
+<footer>Đề tham khảo để ôn tập; giáo viên có thể điều chỉnh theo các bài đã dạy thực tế.</footer>
+</div>
+<script>
+const QUESTIONS = [
+ {q:"Thông tin giúp chúng ta điều gì?",o:["Hiểu biết thêm về sự vật, sự việc.","Chỉ để trang trí máy tính."],a:0},
+ {q:"Khi thấy trời nhiều mây đen, em có thể nghĩ trời sắp mưa. Đây là việc gì?",o:["Suy nghĩ, xử lí thông tin.","Tắt màn hình máy tính."],a:0},
+ {q:"Thiết bị nào là máy tính?",o:["Máy tính để bàn.","Cái cặp sách."],a:0},
+ {q:"Máy tính có thể giúp em làm việc nào?",o:["Học tập và tìm hiểu kiến thức.","Tự đi học thay em."],a:0},
+ {q:"Trước khi sử dụng máy tính, em nên làm gì?",o:["Ngồi đúng tư thế và làm theo hướng dẫn.","Tự ý giật dây điện."],a:0},
+ {q:"Khi làm việc với máy tính, mắt nên cách màn hình như thế nào?",o:["Ở khoảng cách phù hợp, không dí sát vào màn hình.","Sát màn hình nhất có thể."],a:0},
+ {q:"Bàn phím máy tính dùng để làm gì?",o:["Nhập chữ, số và kí hiệu.","Phát âm thanh."],a:0},
+ {q:"Chuột máy tính thường dùng để làm gì?",o:["Di chuyển con trỏ và chọn đối tượng trên màn hình.","In giấy ra máy in."],a:0},
+ {q:"Khi muốn chọn một biểu tượng trên màn hình bằng chuột, em thường làm gì?",o:["Di chuyển con trỏ đến biểu tượng rồi nháy chuột theo hướng dẫn.","Đập mạnh chuột xuống bàn."],a:0},
+ {q:"Nếu gặp khó khăn hoặc thấy thiết bị có dấu hiệu hỏng, em nên làm gì?",o:["Báo cho thầy cô hoặc người lớn.","Tự tháo máy tính ra xem."],a:0}
+];
+const letters=["A","B"];
+const questionsEl=document.getElementById("questions");
+questionsEl.innerHTML=QUESTIONS.map((q,i)=>`<fieldset class="question"><legend class="q-title"><span class="q-number">Câu ${i+1}.</span> ${q.q}</legend><div class="options">${q.o.map((op,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"><span><strong>${letters[j]}.</strong> ${op}</span></label>`).join("")}</div></fieldset>`).join("");
+document.getElementById("submitBtn").addEventListener("click",()=>{
+ const name=document.getElementById("studentName").value.trim();
+ const cls=document.getElementById("studentClass").value.trim();
+ const answers=QUESTIONS.map((q,i)=>{const selected=document.querySelector(`input[name="q${i}"]:checked`);return selected?Number(selected.value):null;});
+ const correct=answers.filter((a,i)=>a===QUESTIONS[i].a).length;
+ const score=correct;
+ const result=document.getElementById("result");
+ result.hidden=false;result.className="result "+(score>=5?"good":"bad");
+ result.innerHTML=`<h2>Kết quả bài làm</h2><p><strong>Họ và tên:</strong> ${escapeHTML(name||"Chưa nhập")} &nbsp; <strong>Lớp:</strong> ${escapeHTML(cls||"Chưa nhập")}</p><p><strong>Điểm: ${score}/10</strong> (${correct}/${QUESTIONS.length} câu đúng)</p><h3>Đáp án và nhận xét</h3>`+QUESTIONS.map((q,i)=>`<div class="review"><strong>Câu ${i+1}.</strong> ${q.q}<br><span class="${answers[i]===q.a?"correct":"incorrect"}">${answers[i]===q.a?"Đúng":"Chưa đúng hoặc chưa trả lời"}</span> — Đáp án: <strong>${letters[q.a]}. ${q.o[q.a]}</strong></div>`).join("");
+ result.scrollIntoView({behavior:"smooth",block:"start"});
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{document.querySelectorAll('input[type="radio"]').forEach(x=>x.checked=false);document.getElementById("studentName").value="";document.getElementById("studentClass").value="";const r=document.getElementById("result");r.hidden=true;r.innerHTML="";window.scrollTo({top:0,behavior:"smooth"});});
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+</script>
+</body>
+</html>
